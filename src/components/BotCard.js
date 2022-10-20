@@ -1,4 +1,5 @@
 import React from "react";
+import YourBotArmy from "./YourBotArmy";
 
 const botTypeClasses = {
   Assault: "icon military",
@@ -9,13 +10,34 @@ const botTypeClasses = {
   Captain: "icon star",
 };
 
-function BotCard({ bot }) {
-  return (
+function BotCard({ bot, onDeleteItem, updateItem}) {
+  
+  function handleClick(){
+    fetch(`http://localhost:8002/bots`, {
+      method:"POST",
+      headers:{
+        "content-Type": "application/json",
+      }, 
+      body: JSON.stringify({bot}),
+    })
+    .then((r) => r.json())
+    .then(updateItem(bot))
+  }
+
+function handleDelete(){
+  fetch(`http://localhost:8002/bots/${bot.id}`,{
+      method: "DELETE",
+    })
+    .then((r)=>r.json())
+    .then(onDeleteItem(bot))
+  
+}
+return (
     <div className="ui column">
       <div
         className="ui card"
         key={bot.id}
-        onClick={() => console.log("add code to connect event listener")}
+        onClick={handleClick}
       >
         <div className="image">
           <img alt="oh no!" src={bot.avatar_url} />
@@ -47,8 +69,7 @@ function BotCard({ bot }) {
             <div className="ui center aligned segment basic">
               <button
                 className="ui mini red button"
-                onClick={() =>
-                  console.log("add code to connect event listener")
+                onClick={handleDelete
                 }
               >
                 x
